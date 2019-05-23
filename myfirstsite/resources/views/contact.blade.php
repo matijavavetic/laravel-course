@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title></title>
-</head>
-</html>
+@extends('layout')
 
-<body>
+@section('title', 'Contact Us')
+
+@section('content')
     <h1>Contact Form</h1>
-</body>
-</html>
+@endsection
+
