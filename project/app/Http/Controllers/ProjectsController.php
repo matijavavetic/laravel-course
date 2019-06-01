@@ -2,15 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
 use App\Project;
+use Flash;
+// use App\Mail\ProjectCreated;
+use App\Events\ProjectCreated;
+// use Illuminate\Filesystem\Filesystem;
 
 class ProjectsController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index()
     {
-        $projects = Project::all();
+        $projects = auth()->user()->projects;
 
         return view('projects.index', compact('projects'));
     }
@@ -20,19 +27,29 @@ class ProjectsController extends Controller
         return view('projects.create');
     }
 
+    public function store()
+    {
+        $attributes = $this->validateProject();
+        $attributes['owner_id'] = auth()->id();
+
+        $project = Project::create($attributes);
+
+        return redirect('/projects');
+    }
+
     public function show(Project $project)
     {
         return view('projects.show', compact('project'));
     }
 
-    public function edit(Project $project) // example.com/projects/1/edit
+    public function edit(Project $project)
     {
         return view('projects.edit', compact('project'));
     }
 
     public function update(Project $project)
     {
-        $project->update(request(['title', 'description']));
+        $project->update($this->validateProject());
 
         return redirect('/projects');
     }
@@ -44,15 +61,11 @@ class ProjectsController extends Controller
         return redirect('/projects');
     }
 
-    public function store()
+    protected function validateProject()
     {
-        $attributes = request()->validate([
-            'title' => ['required', 'min:3', 'max:255'],
-            'description' => ['required', 'min:3']
+        return request()->validate([
+            'title' => ['required', 'min:3'],
+            'description' => 'required|min:3'
         ]);
-
-        Project::create($attributes);
-
-        return redirect('/projects');
     }
 }

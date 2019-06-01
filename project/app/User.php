@@ -28,12 +28,17 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    public function projects()
+    {
+        return $this->hasMany(Project::class, 'owner_id');
+    }
+
+    public function isVerified()
+    {
+        return (bool) $this->email_verified_at;
+    }
+    public function isNotVerified()
+    {
+        return ! $this->email_verified_at;
+    }
 }

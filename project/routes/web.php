@@ -11,12 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-/* Routing conventions
- * -----------------------------
+/**
  * GET /projects (index)
  * GET /projects/create (create)
  * GET /projects/1 (show)
@@ -26,15 +21,24 @@ Route::get('/', function () {
  * DELETE /projects/1 (destroy)
  */
 
-Route::resource('projects', 'ProjectsController');
-Route::patch('/tasks/{task}', 'ProjectTasksController@update');
-Route::post('/projects/{project}/{task}', 'ProjectTasksController@store');
-/*
-Route::get('/projects', 'ProjectsController@index');
-Route::get('/projects/create', 'ProjectsController@create');
-Route::get('/projects/{project}', 'ProjectsController@show');
-Route::post('/projects', 'ProjectsController@store');
-Route::get('/projects/{project}/edit', 'ProjectsController@edit');
-Route::patch('/projects/{project}', 'ProjectsController@update');
-Route::delete('projects/{project}', 'ProjectsControllers@destroy');
-*/
+use Illuminate\Http\Request;
+
+Route::get('/', function (Request $request) {
+    return view('welcome');
+});
+
+Route::resource('projects', 'ProjectsController')->middleware('can:update,project');
+
+Route::post('/projects/{project}/tasks', 'ProjectTasksController@store');
+
+Route::post('/completed-tasks/{task}', 'CompletedTasksController@store');
+Route::delete('/completed-tasks/{task}', 'CompletedTasksController@destroy');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+// Route::get('/shows', function () {
+//     return view('welcome');
+// });
+
